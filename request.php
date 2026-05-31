@@ -44,7 +44,13 @@ $backurl = new moodle_url('/mod/quiz/report.php', [
 $guard = new \aiplacement_gradeconfidence\local\credit_guard();
 $status = $guard->status((int) $context->id, (int) $USER->id);
 if ($status['enabled'] && !$status['can']) {
-    redirect($backurl, get_string('creditsout', 'qtype_aigraded'));
+    // Out of checks: offer a one-click "ask for more" link alongside the notice.
+    $requesturl = new moodle_url('/ai/placement/gradeconfidence/creditrequest.php', [
+        'courseid' => $attemptobj->get_courseid(),
+        'sesskey' => sesskey(),
+    ]);
+    redirect($backurl, get_string('creditsout', 'qtype_aigraded') . ' '
+        . html_writer::link($requesturl, get_string('requestmore', 'qtype_aigraded')));
 }
 
 $reviewed = \qtype_aigraded\local\review::for_attempt((int) $attemptrow->id);
