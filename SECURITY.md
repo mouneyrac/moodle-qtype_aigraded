@@ -26,7 +26,8 @@ This repository (`qtype_aigraded`, the quiz question type) is reviewed together 
 - **Executable security suite** — `vendor/bin/phpunit --group security` asserts the access-control and
   attack-surface invariants on every CI run. The student-facing rendering is identical to a core Essay
   question — the assurance review is never shown to students.
-- **CodeQL** static analysis runs on every push and weekly — see this repository's **Security** tab.
+- **Semgrep** static analysis (SAST for PHP) runs on every push and weekly — results appear in this
+  repository's **Security** tab.
 - A **threat-focused manual security review** (data theft, privilege escalation, abuse).
 - **Zero third-party runtime dependencies** by design.
 
