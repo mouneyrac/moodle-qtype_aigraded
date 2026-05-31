@@ -56,8 +56,14 @@ class review {
                 continue;
             }
             try {
-                if (self::run($contextid, (int) $qa->get_database_id(), $userid, $rubric,
-                        (string) $qa->get_response_summary())) {
+                $reviewed = self::run(
+                    $contextid,
+                    (int) $qa->get_database_id(),
+                    $userid,
+                    $rubric,
+                    (string) $qa->get_response_summary()
+                );
+                if ($reviewed) {
                     $count++;
                 }
             } catch (\Throwable $e) {
