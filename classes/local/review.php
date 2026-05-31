@@ -31,6 +31,44 @@ use aiplacement_gradeconfidence\local\run_store;
  */
 class review {
     /**
+     * Review every aigraded essay response in one quiz attempt (shared by the auto task and the on-demand
+     * trigger). Returns how many responses were reviewed.
+     *
+     * @param int $attemptid The quiz attempt id.
+     * @return int Responses reviewed.
+     */
+    public static function for_attempt(int $attemptid): int {
+        try {
+            $attemptobj = \mod_quiz\quiz_attempt::create($attemptid);
+        } catch (\moodle_exception $e) {
+            return 0; // The attempt was deleted.
+        }
+        $contextid = (int) $attemptobj->get_quizobj()->get_context()->id;
+        $userid = (int) $attemptobj->get_userid();
+        $count = 0;
+        foreach ($attemptobj->get_slots() as $slot) {
+            if ($attemptobj->get_question_type_name($slot) !== 'aigraded') {
+                continue;
+            }
+            $qa = $attemptobj->get_question_attempt($slot);
+            $rubric = \qtype_aigraded::rubric_for((int) $qa->get_question_id());
+            if (trim($rubric) === '') {
+                continue;
+            }
+            try {
+                if (self::run($contextid, (int) $qa->get_database_id(), $userid, $rubric,
+                        (string) $qa->get_response_summary())) {
+                    $count++;
+                }
+            } catch (\Throwable $e) {
+                // One failed response must not stop the others.
+                debugging('qtype_aigraded review failed: ' . $e->getMessage(), DEBUG_DEVELOPER);
+            }
+        }
+        return $count;
+    }
+
+    /**
      * Run the review for one response.
      *
      * @param int $contextid The quiz module context id.

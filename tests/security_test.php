@@ -30,7 +30,7 @@ namespace qtype_aigraded;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class security_test extends \basic_testcase {
-    public function test_renderer_adds_no_student_facing_output_over_essay(): void {
+    public function test_renderer_only_adds_a_grader_gated_trigger_over_essay(): void {
         global $CFG;
         require_once($CFG->dirroot . '/question/type/aigraded/renderer.php');
 
@@ -41,17 +41,27 @@ final class security_test extends \basic_testcase {
             'SECURITY: the question type must render exactly like a core Essay question for students'
         );
 
-        // No methods declared directly on our renderer ⇒ no override that could surface the review.
+        // The only override may be feedback() — and it must be gated to the grading context.
         $ref = new \ReflectionClass('qtype_aigraded_renderer');
-        $own = array_values(array_filter(
-            array_map(static fn (\ReflectionMethod $m) => $m->getName(), $ref->getMethods()),
-            static fn (string $name) => (new \ReflectionMethod('qtype_aigraded_renderer', $name))
-                ->getDeclaringClass()->getName() === 'qtype_aigraded_renderer'
-        ));
+        $own = [];
+        foreach ($ref->getMethods() as $method) {
+            if ($method->getDeclaringClass()->getName() === 'qtype_aigraded_renderer') {
+                $own[] = $method->getName();
+            }
+        }
         $this->assertSame(
-            [],
+            ['feedback'],
             $own,
-            'SECURITY: the qtype renderer must not override Essay rendering — students must never see the review'
+            'SECURITY: the only renderer override may be the grader-gated feedback()'
+        );
+
+        // The on-demand trigger must be gated on the editable manual comment — i.e. shown only while a
+        // teacher is grading, never to a student attempting or reviewing.
+        $source = file_get_contents((new \ReflectionMethod('qtype_aigraded_renderer', 'feedback'))->getFileName());
+        $this->assertStringContainsString(
+            'question_display_options::EDITABLE',
+            $source,
+            'SECURITY: the trigger must gate on the editable manual comment so students never see it'
         );
     }
 }

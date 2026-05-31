@@ -30,6 +30,11 @@ class observer {
      * @param \mod_quiz\event\attempt_submitted $event
      */
     public static function attempt_submitted(\mod_quiz\event\attempt_submitted $event): void {
+        // Only auto-review on submission in 'auto' mode. The default is on-demand: the teacher triggers a
+        // check when they want one, which keeps cost low enough to afford the best model.
+        if (get_config('aiplacement_gradeconfidence', 'mode') !== 'auto') {
+            return;
+        }
         $task = new \qtype_aigraded\task\review_attempt();
         $task->set_custom_data(['attemptid' => $event->objectid]);
         \core\task\manager::queue_adhoc_task($task);

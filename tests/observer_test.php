@@ -37,6 +37,7 @@ final class observer_test extends \advanced_testcase {
         require_once($CFG->dirroot . '/mod/quiz/locallib.php');
         $this->resetAfterTest();
         $this->setAdminUser();
+        set_config('mode', 'auto', 'aiplacement_gradeconfidence');
 
         // A course with a quiz that has one aigraded question (the generator gives it a rubric), and a student.
         $gen = $this->getDataGenerator();
@@ -89,6 +90,7 @@ final class observer_test extends \advanced_testcase {
         require_once($CFG->dirroot . '/mod/quiz/locallib.php');
         $this->resetAfterTest();
         $this->setAdminUser();
+        set_config('mode', 'auto', 'aiplacement_gradeconfidence');
 
         // Same flow, but with a plain essay question — the observer still queues a task (it cannot know
         // the slot types cheaply), but executing it must store nothing for a non-aigraded response.

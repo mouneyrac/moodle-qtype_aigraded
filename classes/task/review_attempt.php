@@ -31,39 +31,8 @@ class review_attempt extends \core\task\adhoc_task {
     public function execute() {
         $data = $this->get_custom_data();
         $attemptid = (int) ($data->attemptid ?? 0);
-        if (!$attemptid) {
-            return;
-        }
-
-        try {
-            $attemptobj = \mod_quiz\quiz_attempt::create($attemptid);
-        } catch (\moodle_exception $e) {
-            return; // The attempt was deleted before the task ran.
-        }
-        $contextid = (int) $attemptobj->get_quizobj()->get_context()->id;
-        $userid = (int) $attemptobj->get_userid();
-
-        foreach ($attemptobj->get_slots() as $slot) {
-            if ($attemptobj->get_question_type_name($slot) !== 'aigraded') {
-                continue;
-            }
-            $qa = $attemptobj->get_question_attempt($slot);
-            $rubric = \qtype_aigraded::rubric_for((int) $qa->get_question_id());
-            if (trim($rubric) === '') {
-                continue;
-            }
-            try {
-                review::run(
-                    $contextid,
-                    (int) $qa->get_database_id(),
-                    $userid,
-                    $rubric,
-                    (string) $qa->get_response_summary()
-                );
-            } catch (\Throwable $e) {
-                // One failed response must not stop the others.
-                debugging('qtype_aigraded review failed: ' . $e->getMessage(), DEBUG_DEVELOPER);
-            }
+        if ($attemptid) {
+            review::for_attempt($attemptid);
         }
     }
 }
