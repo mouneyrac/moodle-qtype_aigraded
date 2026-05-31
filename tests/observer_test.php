@@ -26,11 +26,11 @@ use aiplacement_gradeconfidence\local\run_store;
  * manual end-to-end testing, and where a regression would silently stop quiz reviews from firing.
  *
  * @package    qtype_aigraded
- * @covers     \qtype_aigraded\observer
- * @covers     \qtype_aigraded\task\review_attempt
  * @copyright  2026 onwards
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[\PHPUnit\Framework\Attributes\CoversClass(\qtype_aigraded\observer::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\qtype_aigraded\task\review_attempt::class)]
 final class observer_test extends \advanced_testcase {
     public function test_submitting_an_attempt_queues_and_runs_the_review(): void {
         global $CFG;

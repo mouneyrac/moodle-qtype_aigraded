@@ -25,10 +25,10 @@ use aiplacement_gradeconfidence\local\text_client;
  * Tests for the quiz-response review core.
  *
  * @package    qtype_aigraded
- * @covers     \qtype_aigraded\local\review
  * @copyright  2026 onwards
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[\PHPUnit\Framework\Attributes\CoversClass(\qtype_aigraded\local\review::class)]
 final class review_test extends \advanced_testcase {
     /**
      * A grader whose client returns a canned one-criterion assessment.

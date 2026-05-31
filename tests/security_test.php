@@ -24,11 +24,11 @@ namespace qtype_aigraded;
  * This test fails loudly if anyone adds a renderer override that could leak the review.
  *
  * @package    qtype_aigraded
- * @group      security
- * @coversNothing
  * @copyright  2026 onwards
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[\PHPUnit\Framework\Attributes\Group('security')]
+#[\PHPUnit\Framework\Attributes\CoversNothing]
 final class security_test extends \basic_testcase {
     public function test_renderer_only_adds_a_grader_gated_trigger_over_essay(): void {
         global $CFG;

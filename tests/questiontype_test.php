@@ -20,10 +20,10 @@ namespace qtype_aigraded;
  * Tests that the per-question rubric round-trips through the question save/load path.
  *
  * @package    qtype_aigraded
- * @covers     \qtype_aigraded
  * @copyright  2026 onwards
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[\PHPUnit\Framework\Attributes\CoversClass(\qtype_aigraded::class)]
 final class questiontype_test extends \advanced_testcase {
     public function test_rubric_saves_and_loads_with_the_question(): void {
         $this->resetAfterTest();
